@@ -59,9 +59,9 @@ describe('NodeRegistry API', () => {
           location: ['882681a339fffff'], // h3 cell index at resolution 8 in Boulder, CO.
           industryCode: 'TEST',
           nodeType: NodeType.PSN, 
-          status: NodeStatus.VERIFIED 
+          status: NodeStatus.VERIFIED // TODO: registered nodes should automatically have a pending status.
         };
-    
+        
         await testRegisterNode(node);
       });
   });
