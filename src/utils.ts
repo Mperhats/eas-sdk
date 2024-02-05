@@ -9,6 +9,12 @@ import {
   TransactionResponse,
   ZeroAddress
 } from 'ethers';
+
+import type {
+  BigNumberish,
+  BytesLike,
+} from 'ethers';
+
 import { OffchainAttestationVersion } from './offchain';
 
 export const ZERO_ADDRESS = ZeroAddress;
@@ -26,6 +32,21 @@ const TOPICS = {
   [Event.Timestamped]: keccak256(toUtf8Bytes('Timestamped(bytes32,uint64)')),
   [Event.RevokedOffchain]: keccak256(toUtf8Bytes('RevokedOffchain(address,bytes32,uint64)'))
 };
+
+// TODO: resolve to use import { NodeEntryStruct } from '../typechain-types/INodeRegistry';
+
+export type NodeEntryStruct = {
+  uid: BytesLike;
+  name: string;
+  callbackUrl: string;
+  location: string[];
+  industryCode: string;
+  nodeType: BigNumberish;
+  status: BigNumberish;
+};
+
+export const getNodeUID = ({ name, callbackUrl, industryCode }: NodeEntryStruct) =>
+  solidityPackedKeccak256(['string', 'string', 'string'], [name, callbackUrl, industryCode]);
 
 export const getSchemaUID = (schema: string, resolverAddress: string, revocable: boolean) =>
   solidityPackedKeccak256(['string', 'address', 'bool'], [schema, resolverAddress, revocable]);
