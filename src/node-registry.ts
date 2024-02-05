@@ -5,11 +5,8 @@ import {
 import { Overrides, TransactionReceipt } from 'ethers';
 import { Base, SignerOrProvider, Transaction } from './transaction';
 import { NodeEntryStruct, ZERO_BYTES32, getNodeUID } from './utils';
-import { NodeEntryStructOutput } from '../pl-registry/typechain-types/INodeRegistry';
 
 // TypeScript representation of the NodeEntry struct from Solidity
-
-//TODO: replace with the typechain type exported from the registry contract.
 export type NodeEntry = {
     uid: string;
     name: string;
@@ -31,6 +28,7 @@ export enum NodeStatus {
 }
 
 export interface RegisterNodeParams {
+    uid: string;
     name: string;
     callbackUrl: string;
     location: string[];
@@ -60,19 +58,19 @@ export class NodeRegistry extends Base<NodeRegistryContract> {
 
     // Registers a new node and returns its UID
     public async registerNode(
-        { name, callbackUrl, location, industryCode, nodeType, status }: NodeEntryStruct,
+        { name, callbackUrl, location, industryCode, nodeType, status }: RegisterNodeParams,
         overrides?: Overrides
     ): Promise<Transaction<string>> {
 
-        const nodeEntry = {
-            uid: ZERO_BYTES32, // the contract overwrites this and assigns a new id based. //TODO: improve this logic.
+        const nodeEntry: NodeEntryStruct = {
+            uid: ZERO_BYTES32, // the contract overwrites this and assigns a new id based. //TODO: improve this in the smart contract registration.
             name,
             callbackUrl,
             location,
             industryCode,
             nodeType,
             status
-        } as NodeEntryStruct;
+        };
 
         const tx = await this.contract.registerNode(nodeEntry, overrides ?? {});
 
@@ -83,7 +81,7 @@ export class NodeRegistry extends Base<NodeRegistryContract> {
     }
 
     // Returns an existing node by UID
-    public async getNode({ uid }: GetNodeParams): Promise<NodeEntryStructOutput> {
+    public async getNode({ uid }: GetNodeParams): Promise<NodeEntryStruct> {
         const node = await this.contract.getNode(uid);
         if (node.uid === ZERO_BYTES32) {
             throw new Error('Node not found');
