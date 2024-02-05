@@ -17,14 +17,15 @@ export type NodeEntry = {
     status: NodeStatus;
 };
 
+// TODO: determine a way to autogenerate the enums so that these types can be automatically generated  
 export enum NodeType {
-    PSN = 0, // Provider Supporting Node
-    BSN = 1  // Buyer Supporting Node
+    PSN = 0, // Provider Supporting Node, 0 translates to type BigNumberIsh which equals PSN enum in solidity
+    BSN = 1  // Buyer Supporting Node, 1 translates to type BigNumberIsh which equals PSN enum in solidity
 }
 
 export enum NodeStatus {
-    VERIFIED = 0,
-    UNVERIFIED = 1
+    VERIFIED = 0, // 0 translates to type BigNumberIsh which equals VERIFIED enum in solidity
+    UNVERIFIED = 1 // 0 translates to type BigNumberIsh which equals UNVERIFIED enum in solidity
 }
 
 export interface RegisterNodeParams {
