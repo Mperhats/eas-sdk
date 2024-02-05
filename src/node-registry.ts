@@ -21,13 +21,13 @@ export type NodeEntry = {
 };
 
 export enum NodeType {
-    PSN, // Provider Supporting Node
-    BSN  // Buyer Supporting Node
+    PSN = 0, // Provider Supporting Node
+    BSN = 1  // Buyer Supporting Node
 }
 
 export enum NodeStatus {
-    VERIFIED,
-    UNVERIFIED
+    VERIFIED = 0,
+    UNVERIFIED = 1
 }
 
 export interface RegisterNodeParams {
@@ -60,7 +60,7 @@ export class NodeRegistry extends Base<NodeRegistryContract> {
 
     // Registers a new node and returns its UID
     public async registerNode(
-        { name, callbackUrl, location, industryCode, nodeType, status }: RegisterNodeParams,
+        { name, callbackUrl, location, industryCode, nodeType, status }: NodeEntryStruct,
         overrides?: Overrides
     ): Promise<Transaction<string>> {
 

@@ -1,14 +1,9 @@
-import {
-  EAS__factory,
-  EIP712Proxy__factory,
-  Indexer__factory,
-  SchemaRegistry__factory
-} from '@ethereum-attestation-service/eas-contracts';
 import { ContractFactory, Signer } from 'ethers';
 import { ethers } from 'hardhat';
-import { ETHResolver__factory } from '../typechain-types';
+import { ABI } from 'hardhat-deploy/types';
+import { NodeRegistry__factory } from '../../pl-registry/typechain-types';
 
-export * from '../typechain-types';
+export * from '../../pl-registry/typechain-types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AsyncReturnType<T extends (...args: never) => any> = T extends (...args: any) => Promise<infer U>
@@ -22,7 +17,7 @@ type Contract<F extends ContractFactory> = AsyncReturnType<F['deploy']>;
 
 export interface ContractBuilder<F extends ContractFactory> {
   metadata: {
-    contractName: string;
+    abi: ABI;
     bytecode: string;
   };
   deploy(...args: Parameters<F['deploy']>): Promise<Contract<F>>;
@@ -36,17 +31,17 @@ export type FactoryConstructor<F extends ContractFactory> = {
 };
 
 export const deployOrAttach = <F extends ContractFactory>(
-  contractName: string,
   FactoryConstructor: FactoryConstructor<F>,
   initialSigner?: Signer
 ): ContractBuilder<F> => {
   return {
     metadata: {
-      contractName,
+      abi: FactoryConstructor.abi as ABI,
       bytecode: FactoryConstructor.bytecode
     },
     deploy: async (...args: Parameters<F['deploy']>): Promise<Contract<F>> => {
-      const defaultSigner = initialSigner ?? (await ethers.getSigners())[0];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const defaultSigner = initialSigner ?? ((await ethers.getSigners())[0] as any as Signer);
 
       return new FactoryConstructor(defaultSigner).deploy(...(args || [])) as Promise<Contract<F>>;
     },
@@ -60,7 +55,8 @@ export const attachOnly = <F extends ContractFactory>(
 ) => {
   return {
     attach: async (address: string, signer?: Signer): Promise<Contract<F>> => {
-      const defaultSigner = initialSigner ?? (await ethers.getSigners())[0];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const defaultSigner = initialSigner ?? ((await ethers.getSigners())[0] as any as Signer);
       return new FactoryConstructor(signer ?? defaultSigner).attach(address) as Contract<F>;
     }
   };
@@ -69,14 +65,9 @@ export const attachOnly = <F extends ContractFactory>(
 /* eslint-disable camelcase */
 const getContracts = (signer?: Signer) => ({
   connect: (signer: Signer) => getContracts(signer),
-
-  EAS: deployOrAttach('EAS', EAS__factory, signer),
-  SchemaRegistry: deployOrAttach('SchemaRegistry', SchemaRegistry__factory, signer),
-  EIP712Proxy: deployOrAttach('EIP712Proxy', EIP712Proxy__factory, signer),
-  Indexer: deployOrAttach('Indexer', Indexer__factory, signer),
-
-  ETHResolver: deployOrAttach('ETHResolver', ETHResolver__factory, signer)
+  NodeRegistry: deployOrAttach(NodeRegistry__factory, signer)
 });
 /* eslint-enable camelcase */
 
 export default getContracts();
+
