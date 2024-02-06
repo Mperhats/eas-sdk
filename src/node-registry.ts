@@ -4,7 +4,8 @@ import {
 } from '../pl-registry/typechain-types';
 import { Overrides, TransactionReceipt } from 'ethers';
 import { Base, SignerOrProvider, Transaction } from './transaction';
-import { NodeEntryStruct, ZERO_BYTES32, getNodeUID } from './utils';
+import { ZERO_BYTES32, getNodeUID } from './utils';
+import { NodeEntryStruct } from '../pl-registry/typechain-types/INodeRegistry';
 
 // TypeScript representation of the NodeEntry struct from Solidity
 export type NodeEntry = {

@@ -1,7 +1,3 @@
-export * as Contracts from '@ethereum-attestation-service/eas-contracts';
-export * from './eas';
-export * from './offchain';
-export * from './request';
-export * from './schema-encoder';
-export * from './schema-registry';
+export * as Contracts from '../pl-registry/typechain-types';
+export * from './node-registry';
 export * from './utils';
