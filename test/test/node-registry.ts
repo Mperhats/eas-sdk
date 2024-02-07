@@ -1,10 +1,11 @@
 import { NodeRegistry as NodeRegistryContract } from '../../pl-registry/typechain-types';
 import { Signer } from 'ethers';
 import { ethers } from 'hardhat';
-import { NodeRegistry, NodeType, NodeStatus, RegisterNodeParams } from '../../src/node-registry';
+import { NodeRegistry, NodeType, NodeStatus } from '../../src/node-registry';
 import { ZERO_BYTES32, getNodeUID } from '../../src/utils';
 import Contracts from '../components/Contracts';
 import chai from './helpers/chai';
+import { RegisterNodeEntryParamsStruct } from '../../pl-registry/typechain-types/INodeRegistry';
 
 const { expect } = chai;
 
@@ -33,9 +34,11 @@ describe('NodeRegistry API', () => {
   });
 
   describe('node registration', () => {
-    const testRegisterNode = async (node: RegisterNodeParams) => {
-        const uid = getNodeUID(node);
-        await expect(nodeRegistry.getNode({ uid })).to.be.rejectedWith('Node not found');
+    const testRegisterNode = async (node: RegisterNodeEntryParamsStruct) => {
+      const { name, callbackUrl, industryCode } = node;
+      const uid = getNodeUID(name,callbackUrl,industryCode);
+
+      await expect(nodeRegistry.getNode({ uid })).to.be.rejectedWith('Node not found');
 
       const tx = await nodeRegistry.registerNode(node);
       const uid2 = await tx.wait();
@@ -48,7 +51,8 @@ describe('NodeRegistry API', () => {
       expect(nodeEntry.industryCode).to.equal(node.industryCode);
       expect(nodeEntry.location).to.deep.equal(node.location);
       expect(nodeEntry.nodeType).to.equal(node.nodeType);
-      expect(nodeEntry.status).to.equal(node.status);
+      expect(nodeEntry.owner).to.equal(await sender.getAddress());
+      expect(nodeEntry.status).to.equal(0n); // 0n is INITIATED the first value in the enums and initial value of a node upon registration
     };
 
     it('should not allow registering a node with existing uid', async () => {

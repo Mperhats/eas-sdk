@@ -6,6 +6,7 @@ export type NodeEntryStruct = {
     callbackUrl: string;
     location: string[];
     industryCode: string;
+    owner: AddressLike;
     nodeType: BigNumberish;
     status: BigNumberish;
 };
@@ -15,6 +16,7 @@ export type NodeEntryStructOutput = [
     callbackUrl: string,
     location: string[],
     industryCode: string,
+    owner: string,
     nodeType: bigint,
     status: bigint
 ] & {
@@ -23,14 +25,35 @@ export type NodeEntryStructOutput = [
     callbackUrl: string;
     location: string[];
     industryCode: string;
+    owner: string;
     nodeType: bigint;
     status: bigint;
+};
+export type RegisterNodeEntryParamsStruct = {
+    name: string;
+    callbackUrl: string;
+    location: string[];
+    industryCode: string;
+    nodeType: BigNumberish;
+};
+export type RegisterNodeEntryParamsStructOutput = [
+    name: string,
+    callbackUrl: string,
+    location: string[],
+    industryCode: string,
+    nodeType: bigint
+] & {
+    name: string;
+    callbackUrl: string;
+    location: string[];
+    industryCode: string;
+    nodeType: bigint;
 };
 export interface NodeRegistryInterface extends Interface {
     getFunction(nameOrSignature: "getNode" | "registerNode" | "version"): FunctionFragment;
     getEvent(nameOrSignatureOrTopic: "Registered"): EventFragment;
     encodeFunctionData(functionFragment: "getNode", values: [BytesLike]): string;
-    encodeFunctionData(functionFragment: "registerNode", values: [NodeEntryStruct]): string;
+    encodeFunctionData(functionFragment: "registerNode", values: [RegisterNodeEntryParamsStruct]): string;
     encodeFunctionData(functionFragment: "version", values?: undefined): string;
     decodeFunctionResult(functionFragment: "getNode", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "registerNode", data: BytesLike): Result;
@@ -76,14 +99,18 @@ export interface NodeRegistry extends BaseContract {
         NodeEntryStructOutput
     ], "view">;
     registerNode: TypedContractMethod<[
-        entry: NodeEntryStruct
+        entry: RegisterNodeEntryParamsStruct
     ], [
         string
     ], "nonpayable">;
     version: TypedContractMethod<[], [string], "view">;
     getFunction<T extends ContractMethod = ContractMethod>(key: string | FunctionFragment): T;
     getFunction(nameOrSignature: "getNode"): TypedContractMethod<[uid: BytesLike], [NodeEntryStructOutput], "view">;
-    getFunction(nameOrSignature: "registerNode"): TypedContractMethod<[entry: NodeEntryStruct], [string], "nonpayable">;
+    getFunction(nameOrSignature: "registerNode"): TypedContractMethod<[
+        entry: RegisterNodeEntryParamsStruct
+    ], [
+        string
+    ], "nonpayable">;
     getFunction(nameOrSignature: "version"): TypedContractMethod<[], [string], "view">;
     getEvent(key: "Registered"): TypedContractEvent<RegisteredEvent.InputTuple, RegisteredEvent.OutputTuple, RegisteredEvent.OutputObject>;
     filters: {

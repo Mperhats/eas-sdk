@@ -49,6 +49,11 @@ const _abi = [
                         type: "string",
                     },
                     {
+                        internalType: "address",
+                        name: "owner",
+                        type: "address",
+                    },
+                    {
                         internalType: "enum NodeType",
                         name: "nodeType",
                         type: "uint8",
@@ -106,6 +111,11 @@ const _abi = [
                         type: "string",
                     },
                     {
+                        internalType: "address",
+                        name: "owner",
+                        type: "address",
+                    },
+                    {
                         internalType: "enum NodeType",
                         name: "nodeType",
                         type: "uint8",
@@ -128,11 +138,6 @@ const _abi = [
         inputs: [
             {
                 components: [
-                    {
-                        internalType: "bytes32",
-                        name: "uid",
-                        type: "bytes32",
-                    },
                     {
                         internalType: "string",
                         name: "name",
@@ -158,13 +163,8 @@ const _abi = [
                         name: "nodeType",
                         type: "uint8",
                     },
-                    {
-                        internalType: "enum NodeStatus",
-                        name: "status",
-                        type: "uint8",
-                    },
                 ],
-                internalType: "struct NodeEntry",
+                internalType: "struct RegisterNodeEntryParams",
                 name: "entry",
                 type: "tuple",
             },

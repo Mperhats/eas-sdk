@@ -35,6 +35,10 @@ export declare class INodeRegistry__factory {
                 readonly name: "industryCode";
                 readonly type: "string";
             }, {
+                readonly internalType: "address";
+                readonly name: "owner";
+                readonly type: "address";
+            }, {
                 readonly internalType: "enum NodeType";
                 readonly name: "nodeType";
                 readonly type: "uint8";
@@ -79,6 +83,10 @@ export declare class INodeRegistry__factory {
                 readonly name: "industryCode";
                 readonly type: "string";
             }, {
+                readonly internalType: "address";
+                readonly name: "owner";
+                readonly type: "address";
+            }, {
                 readonly internalType: "enum NodeType";
                 readonly name: "nodeType";
                 readonly type: "uint8";
@@ -96,10 +104,6 @@ export declare class INodeRegistry__factory {
     }, {
         readonly inputs: readonly [{
             readonly components: readonly [{
-                readonly internalType: "bytes32";
-                readonly name: "uid";
-                readonly type: "bytes32";
-            }, {
                 readonly internalType: "string";
                 readonly name: "name";
                 readonly type: "string";
@@ -119,12 +123,8 @@ export declare class INodeRegistry__factory {
                 readonly internalType: "enum NodeType";
                 readonly name: "nodeType";
                 readonly type: "uint8";
-            }, {
-                readonly internalType: "enum NodeStatus";
-                readonly name: "status";
-                readonly type: "uint8";
             }];
-            readonly internalType: "struct NodeEntry";
+            readonly internalType: "struct RegisterNodeEntryParams";
             readonly name: "entry";
             readonly type: "tuple";
         }];

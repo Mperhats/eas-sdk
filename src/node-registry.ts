@@ -5,7 +5,7 @@ import {
 import { Overrides, TransactionReceipt } from 'ethers';
 import { Base, SignerOrProvider, Transaction } from './transaction';
 import { ZERO_BYTES32, getNodeUID } from './utils';
-import { NodeEntryStruct } from '../pl-registry/typechain-types/INodeRegistry';
+import { NodeEntryStruct, RegisterNodeEntryParamsStruct } from '../pl-registry/typechain-types/INodeRegistry';
 
 // TypeScript representation of the NodeEntry struct from Solidity
 export type NodeEntry = {
@@ -18,26 +18,19 @@ export type NodeEntry = {
     status: NodeStatus;
 };
 
-// TODO: determine a way to autogenerate the enums so that these types can be automatically generated  
 export enum NodeType {
-    PSN = 0, // Provider Supporting Node, 0 translates to type BigNumberIsh which equals PSN enum in solidity
-    BSN = 1  // Buyer Supporting Node, 1 translates to type BigNumberIsh which equals PSN enum in solidity
+    PSN = 0, // provider supporting node
+    BSN = 1, // buyer supporting node
+    GP = 2 // gateway provider
 }
 
+// Define an enum for the status
 export enum NodeStatus {
-    VERIFIED = 0, // 0 translates to type BigNumberIsh which equals VERIFIED enum in solidity
-    UNVERIFIED = 1 // 0 translates to type BigNumberIsh which equals UNVERIFIED enum in solidity
+    INITIATED = 0,
+    VERIFIED = 1,
+    INVALID = 2
 }
 
-export interface RegisterNodeParams {
-    uid: string;
-    name: string;
-    callbackUrl: string;
-    location: string[];
-    industryCode: string;
-    nodeType: NodeType;
-    status: NodeStatus;
-}
 
 export interface GetNodeParams {
     uid: string;
@@ -60,25 +53,23 @@ export class NodeRegistry extends Base<NodeRegistryContract> {
 
     // Registers a new node and returns its UID
     public async registerNode(
-        { name, callbackUrl, location, industryCode, nodeType, status }: RegisterNodeParams,
+        { name, callbackUrl, location, industryCode, nodeType }: RegisterNodeEntryParamsStruct,
         overrides?: Overrides
     ): Promise<Transaction<string>> {
 
-        const nodeEntry: NodeEntryStruct = {
-            uid: ZERO_BYTES32, // the contract overwrites this and assigns a new id based. //TODO: improve this in the smart contract registration.
+        const nodeEntry: RegisterNodeEntryParamsStruct = {
             name,
             callbackUrl,
             location,
             industryCode,
             nodeType,
-            status
         };
 
         const tx = await this.contract.registerNode(nodeEntry, overrides ?? {});
 
         // eslint-disable-next-line require-await
-        return new Transaction(tx, async (_receipt: TransactionReceipt) =>
-            getNodeUID(nodeEntry)
+        return new Transaction(tx, async (_receipt: TransactionReceipt) => 
+            getNodeUID(name, callbackUrl, industryCode)
         );
     }
 
